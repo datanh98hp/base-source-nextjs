@@ -1,3 +1,4 @@
+"use client";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -13,28 +14,90 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@/components/ui/menubar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Menu } from "lucide-react";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
-/// list item menu
-const menuList = [
-  {
-    name: "Item 1",
-    href: "/",
-    icon: null,
-    children: [
-      {
-        name: "Item 1- 1",
-      },
-    ],
-  },
-];
 export default function NavHeader() {
+  const { data: session } = useSession();
+//   console.log("session", session);
   return (
     <div className="shadow-md  h-fit shadow-gray-800 flex items-center md:justify-evenly justify-between">
       <div className="p-4 md:flex hidden justify-evenly items-center ">
         {/* desktop */}
         <Menubar className="md:flex hidden border-transparent">
+          <MenubarMenu>
+            <div className="">
+              <MenubarTrigger className="p-4 w-fit hover:bg-gray-300 hover:bg-opacity-50">
+                Title 1
+              </MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem className="">
+                  Title 1 - 1<MenubarShortcut>⌘T</MenubarShortcut>
+                </MenubarItem>
+                <MenubarItem>
+                  Item 1- 2 <MenubarShortcut>⌘N</MenubarShortcut>
+                </MenubarItem>
+                <MenubarItem disabled>New Incognito Window</MenubarItem>
+                <MenubarSeparator />
+                <MenubarSub>
+                  <MenubarSubTrigger> Item 1- 3</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem> Item 1- 3 -1</MenubarItem>
+                    <MenubarItem>Item 1- 3 -2</MenubarItem>
+                    <MenubarItem>Item 1- 3 -3</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+                <MenubarSeparator />
+                <MenubarItem>
+                  Item 1- 4 <MenubarShortcut>⌘P</MenubarShortcut>
+                </MenubarItem>
+              </MenubarContent>
+            </div>
+          </MenubarMenu>
+
+          <MenubarMenu>
+            <div className="">
+              <MenubarTrigger className="p-4 w-fit hover:bg-gray-300 hover:bg-opacity-50">
+                Item 1
+              </MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem className="">
+                  Item 1- 1 <MenubarShortcut>⌘T</MenubarShortcut>
+                </MenubarItem>
+                <MenubarItem>
+                  Item 1- 2 <MenubarShortcut>⌘N</MenubarShortcut>
+                </MenubarItem>
+                <MenubarItem disabled>New Incognito Window</MenubarItem>
+                <MenubarSeparator />
+                <MenubarSub>
+                  <MenubarSubTrigger> Item 1- 3</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem> Item 1- 3 -1</MenubarItem>
+                    <MenubarItem>Item 1- 3 -2</MenubarItem>
+                    <MenubarItem>Item 1- 3 -3</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+                <MenubarSeparator />
+                <MenubarItem>
+                  Item 1- 4 <MenubarShortcut>⌘P</MenubarShortcut>
+                </MenubarItem>
+              </MenubarContent>
+            </div>
+          </MenubarMenu>
+
           <MenubarMenu>
             <div className="">
               <MenubarTrigger className="p-4 w-fit hover:bg-gray-300 hover:bg-opacity-50">
@@ -152,7 +215,7 @@ export default function NavHeader() {
         {/* <div className="block md:hidden"></div> */}
       </div>
       {/* mobile */}
-      <div className="md:hidden p-3 flex justify-between items-center">
+      <div className="md:hidden py-3 flex justify-between items-center">
         <Menubar className="border-none">
           <MenubarMenu>
             <MenubarTrigger className=" p-4 w-fit border-none bg-none">
@@ -201,7 +264,34 @@ export default function NavHeader() {
           </MenubarMenu>
         </Menubar>
       </div>
-      <div>User navigate</div>
+      <div>
+        <span className="text-white">{session?.user?.email}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar className="outline-none">
+              <AvatarImage
+                className="outline-none"
+                src="https://github.com/shadcn.png"
+              />
+              <AvatarFallback>Avartar</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>
+              {!session ? (
+                <Link href="/login">Login</Link>
+              ) : (
+                <Button variant={"outline"} onClick={() => signOut()}>
+                  Sign Out
+                </Button>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

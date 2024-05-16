@@ -1,31 +1,42 @@
 
-import { authOptions } from '@/lib/authOptions'
-import { checkAuth } from '@/lib/check_auth'
-import { parseJwt } from '@/lib/func'
-import { getSession } from 'next-auth/react'
-import { NextResponse } from 'next/server'
+import { decrypt } from '@/lib/utils/session'
+import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server'
-import { jwtDecode } from "jwt-decode";
-import NextAuth from 'next-auth'
-
+import { NextResponse } from 'next/server'
+export { default } from "next-auth/middleware"
 // This function can be marked `async` if using `await` inside
+
+// 1. Specify protected and public routes
+const protectedRoutes = ['/dashboard']
+const publicRoutes = ['/login', '/signup', '/']
 export async function middleware(request: NextRequest) {
-    // console.log("cookies data : ", request.cookies.get('next-auth.session-token'))
-    console.log("middleware----------")
-    const token = request.cookies.get('next-auth.session-token')
-    // console.log("token : ", token?.value)
-    // if (!token) {
-    //     // return NextResponse.rewrite(new URL('/login', request.url))
-    //     return NextResponse.rewrite(new URL('/auth', request.url))
-    // }
-    // return NextResponse.next();
+    // 2. Check if the current route is protected or public
+    const path = request.nextUrl.pathname
+    const isProtectedRoute = protectedRoutes.includes(path)
+    const isPublicRoute = publicRoutes.includes(path)
+ 
+    const token = cookies().get('next-auth.session-token')?.value
+    
+    if (isProtectedRoute && !token) {
+        return NextResponse.redirect(new URL('/login', request.nextUrl))
+    }
+    // 6. Redirect to /dashboard if the user is authenticated
+    if (
+        isPublicRoute &&
+        token &&
+        !request.nextUrl.pathname.startsWith('/dashboard')
+    ) {
+        return NextResponse.redirect(new URL('/dashboard', request.nextUrl))
+    }
+    
+    return NextResponse.next();
 }
 
 // See "Matching Paths" below to learn more
 export const config = {
     matcher: [
         '/((?!api|_next/static|_next/image|favicon.ico).*)',
-        // '/login/:path'
+        '/dashboard'
     ],
 }
 

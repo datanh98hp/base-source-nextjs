@@ -15,7 +15,7 @@ export default async function LoginPage() {
   return (
     <section className="container h-screen flex flex-col items-center justify-center">
       <div className="w-fit">
-        <HeaderCommon />
+        {/* <HeaderCommon /> */}
         <LoginForm />
       </div>
     </section>
